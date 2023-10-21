@@ -14,7 +14,22 @@ export class ClientsHandler {
       return res.send({ client: response });
     } catch (error: any) {
       this.logger.error(error.message);
+      return res.status(500).send({
+        error: error.message
+      });
+    }
+  }
 
+  async getAll(req: Request, res: Response) {
+    try {
+      const { limit, offset } = req.query;
+      const clients = await this.clientService.getAll(
+        limit as string,
+        Number(offset)
+      );
+      return res.send(clients);
+    } catch (error: any) {
+      this.logger.error(error.message);
       return res.status(500).send({
         error: error.message
       });
