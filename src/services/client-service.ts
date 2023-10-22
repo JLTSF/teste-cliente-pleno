@@ -44,17 +44,19 @@ export class ClientService {
         dto,
         JSON.parse(addressExists)
       );
+      this.logger.info(`CREATED USER WITH EMAIL: ${obfuscateEmail(dto.email)}`);
       return cleanObj(client, ['addressId']);
     }
 
     const address = await this.cepService.getAddress(dto.cep);
     const client = await this.clientRepository.create(dto, address);
 
+    this.logger.info(`CREATED USER WITH EMAIL: ${obfuscateEmail(dto.email)}`);
+
     await this.addressCacheService.set(
       onlyDigits(client.address.cep),
       JSON.stringify(client.address)
     );
-
     return cleanObj(client, ['addressId']);
   }
 
