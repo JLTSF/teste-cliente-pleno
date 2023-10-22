@@ -13,10 +13,7 @@ export const makeClientService = () => {
   const axiosInstance = axios.create();
   const cepService = new CepService(logger, axiosInstance);
 
-  const redis = new Redis(env.REDIS_URL, {
-    maxRetriesPerRequest: 3,
-    tls: {}
-  });
+  const redis = new Redis.Cluster([env.REDIS_URL]);
 
   const redisRepository = new RedisRepository(redis);
   const clientCacheService = new CacheService(redisRepository, 'client');

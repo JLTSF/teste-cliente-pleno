@@ -1,7 +1,7 @@
-import { Redis } from 'ioredis';
+import { Cluster } from 'ioredis';
 
 export class RedisRepository {
-  constructor(private readonly repository: Redis) {}
+  constructor(private readonly repository: Cluster) {}
 
   async get(key: string) {
     return this.repository.get(key);
