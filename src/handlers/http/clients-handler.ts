@@ -15,6 +15,11 @@ export class ClientsHandler {
       return res.send({ client: response });
     } catch (error: any) {
       this.logger.error(error.message);
+      if (error instanceof BaseException) {
+        return res.status(error.code).send({
+          error: error.message
+        });
+      }
       return res.status(500).send({
         error: error.message
       });

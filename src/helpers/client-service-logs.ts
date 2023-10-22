@@ -45,3 +45,11 @@ export class ClientNotFoundException extends BaseException {
     this.code = 404;
   }
 }
+
+export class CepNotFoundException extends BaseException {
+  constructor(message: string = 'Invalid cep, check your cep and try again') {
+    super();
+    this.message = message;
+    this.code = 404;
+  }
+}

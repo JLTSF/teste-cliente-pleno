@@ -2,6 +2,7 @@ import { AxiosInstance } from 'axios';
 import { Logger } from 'winston';
 import { AddressResponseDto } from '../models/dtos/address-respone-dto';
 import env from '../env';
+import { CepNotFoundException } from '../helpers/client-service-logs';
 export class CepService {
   constructor(
     private readonly logger: Logger,
@@ -15,9 +16,17 @@ export class CepService {
   async getAddress(cep: string): Promise<AddressResponseDto> {
     try {
       const { data } = await this.axios.get(this.url + `${cep}/json`);
+      if (data.erro) {
+        throw new CepNotFoundException();
+      }
       return data;
     } catch {
-      const { data } = await this.axios.get(this.urlSecondary + cep);
+      const { data } = await this.axios
+        .get(this.urlSecondary + cep)
+        .catch(() => {
+          throw new CepNotFoundException();
+        });
+
       return data;
     }
   }
