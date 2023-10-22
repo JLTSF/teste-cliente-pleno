@@ -29,6 +29,104 @@
 
 ## Primeiros passos
 
-- Clone este repositório em sua máquina e em seguida no diretorio raiz do projeto execute o comando `npm i` para instalar todas as dependencias necessarias.
-- Na pasta raiz do projeto crie um arquivo `.env` e adicione o `DATABASE_URL` e o `REDIS_URL`, eles serão necessarios para conectar a aplicação ao MongoDB e ao Redis.
-- No terminar no diretorio onde se encontra o arquivo docker-compose.yaml execute o comando `docker compose up -d` para subir o MongoDB e o Redis.
+- Clone este repositório em sua máquina e em seguida no diretorio raiz do projeto execute o comando `docker compose up -d` para subir a aplicação, o MongoDB e o Redis.
+- A aplicação ficara disponivel na porta `8080`, para testar se deu tudo certo, a rota `http://localhost:8080/api/v1/health` devera retornar um `OK`.
+
+```
+{
+    "status": "OK",
+    "version": "1.0.0"
+}
+```
+
+- A collection do postman está disponivel [clicando aqui!](https://pastebin.com/raw/tJgm8qwW)
+
+## Exemplos de requisições
+
+### Cadastro de um cliente:
+
+- [POST] <`http://localhost:8080/api/v1/clients`>
+- Request:
+
+  ```
+  {
+    "name": "João",
+    "email": "joao@autovist.com.br",
+    "phone": "11999887766",
+    "cep": "01001000",
+  }
+  ```
+
+- Response:
+
+  ```
+  {
+    "id": "bd981cab-d315-4486-85c7-c6af24c475f9",
+    "name": "João",
+    "email": "joao@autovist.com.br",
+    "phone": "11999887766",
+    "address": {
+      "cep": "01001000",
+      "street": "Praça da Sé",
+      "neighborhood": "Sé",
+      "city": "São Paulo",
+      "state": "SP"
+    }
+  }
+  ```
+
+### Listagem de clientes:
+
+- [GET] <`http://localhost:8080/api/v1/clients`>
+
+- Response:
+
+  ```
+  {
+    "count": 10,
+    "previous": null,
+    "next": "http://localhost:3000/api/v1/clients?limit=2&offset=2",
+    "results": [
+      {
+        "id": "bd981cab-d315-4486-85c7-c6af24c475f9",
+        "name": "João",
+      },
+      {
+        "id": "e486af2c-e5da-4a9b-916e-55a41d26e22d",
+        "name": "Maria",
+      },
+    ]
+  }
+  ```
+
+### Detalhes de um cliente:
+
+- [GET] <`http://localhost:8080/api/v1/clients/bd981cab-d315-4486-85c7-c6af24c475f9`>
+
+- Response:
+
+  ```
+  {
+      "id": "bd981cab-d315-4486-85c7-c6af24c475f9",
+      "name": "João",
+      "email": "joao@autovist.com.br",
+      "phone": "11999887766",
+      "address": {
+        "cep": "01001000",
+        "street": "Praça da Sé",
+        "neighborhood": "Sé",
+        "city": "São Paulo",
+        "state": "SP"
+      }
+    }
+  ```
+
+### Exclusão de um cliente:
+
+- [DELETE] <`http://localhost:8080/api/v1/clients/bd981cab-d315-4486-85c7-c6af24c475f9`>
+
+- Response:
+
+  ```
+  { "message": "Client deleted successfully" }
+  ```
