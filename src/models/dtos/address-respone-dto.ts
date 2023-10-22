@@ -1,4 +1,5 @@
 export interface AddressResponseDto {
+  id?: string;
   cep: string;
   state?: string;
   city?: string;

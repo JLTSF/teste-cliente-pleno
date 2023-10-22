@@ -16,6 +16,7 @@ const DEFAULT_LIMIT_QUERY = Number(process.env.DEFAULT_LIMIT_QUERY || 5);
 const DEFAULT_LIMIT_MAX_QUERY = Number(
   process.env.DEFAULT_LIMIT_MAX_QUERY || 50
 );
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost';
 
 export default {
   PORT,
@@ -25,5 +26,6 @@ export default {
   API_CEP_PROVIDER_SECONDARY,
   BASE_PATH,
   DEFAULT_LIMIT_QUERY,
-  DEFAULT_LIMIT_MAX_QUERY
+  DEFAULT_LIMIT_MAX_QUERY,
+  REDIS_URL
 };
