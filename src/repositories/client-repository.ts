@@ -21,6 +21,9 @@ export class ClientRepository {
             street: address.street ?? (address.logradouro as string)
           }
         }
+      },
+      include: {
+        address: true
       }
     });
 
@@ -37,13 +40,45 @@ export class ClientRepository {
     );
   }
 
-  async getAll() {
+  async getAll(take: number, skip: number) {
     const clients = await this.prisma.client.findMany({
       select: {
         id: true,
         name: true
-      }
+      },
+      take,
+      skip
     });
     return clients;
+  }
+
+  async count(count?: string) {
+    if (count) {
+      return await this.prisma.client.count({
+        where: {
+          id: count
+        }
+      });
+    }
+    return await this.prisma.client.count();
+  }
+
+  async get(id: string) {
+    return await this.prisma.client.findUnique({
+      where: {
+        id
+      },
+      include: {
+        address: true
+      }
+    });
+  }
+
+  async del(id: string) {
+    return await this.prisma.client.delete({
+      where: {
+        id
+      }
+    });
   }
 }
