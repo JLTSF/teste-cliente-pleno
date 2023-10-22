@@ -1,51 +1,98 @@
 version: '3'
 
 services:
-  mongo1:
-    image: mongo
+  app:
+    container_name: app
+    build:
+      context: .
+      network: host
+    ports:
+      - '8000:8000'
+    depends_on:
+      - redis-cluster
+      - mongo
+    env_file:
+      - .env.development
+    networks:
+      - default
+    entrypoint: ['/bin/sh', '-c', 'npx prisma db push & npm start']
+  mongo:
+    build: ./infra/local/mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: MongoDB2019!
+      MONGO_INITDB_ROOT_PASSWORD: prisma
+      MONGO_INITDB_DATABASE: api
+      MONGO_REPLICA_HOST: 127.0.0.1
+      MONGO_REPLICA_PORT: 27017
     ports:
       - '27017:27017'
-    links:
-      - mongo2
-      - mongo3
-    volumes:
-      - dbdata1:/data/db
+    restart: always # restart between reboots
     networks:
-      - mongo-compose-network
-    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'dbrs']
-  mongo2:
-    image: mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: MongoDB2019!
-    ports:
-      - '27018:27017'
-    volumes:
-      - dbdata2:/data/db
-    networks:
-      - mongo-compose-network
-    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'dbrs']
-  mongo3:
-    image: mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: MongoDB2019!
-    ports:
-      - '27019:27017'
-    volumes:
-      - dbdata3:/data/db
-    networks:
-      - mongo-compose-network
-    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'dbrs']
+      - default
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mongo',
+          'admin',
+          '--port',
+          '27018',
+          '--eval',
+          "db.adminCommand('ping')"
+        ]
+      interval: 5s
+      timeout: 2s
+      retries: 20
 
+  redis1:
+    image: redis:alpine
+    ports:
+      - '7000:7000'
+    volumes:
+      - ./infra/local/conf/redis1.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      default:
+        ipv4_address: 165.34.0.10
+    command: redis-server /usr/local/etc/redis/redis.conf
+  redis2:
+    image: redis:alpine
+    ports:
+      - '7001:7001'
+    volumes:
+      - ./infra/local/conf/redis2.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      default:
+        ipv4_address: 165.34.0.11
+    command: redis-server /usr/local/etc/redis/redis.conf
+  redis3:
+    image: redis:alpine
+    ports:
+      - '7002:7002'
+    volumes:
+      - ./infra/local/conf/redis3.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      default:
+        ipv4_address: 165.34.0.12
+    command: redis-server /usr/local/etc/redis/redis.conf
+  redis-cluster:
+    tty: true
+    build:
+      context: .
+      dockerfile: ./infra/local/Dockerfile
+    depends_on:
+      - redis1
+      - redis2
+      - redis3
+    networks:
+      default:
+        ipv4_address: 165.34.0.13
 volumes:
-  dbdata1:
-  dbdata2:
-  dbdata3:
+  mongo_data:
 
 networks:
-  mongo-compose-network:
+  default:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 165.34.0.0/16
