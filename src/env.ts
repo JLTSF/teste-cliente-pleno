@@ -12,7 +12,7 @@ const API_CEP_PROVIDER_SECONDARY =
   'https://brasilapi.com.br/api/cep/v1/';
 
 const BASE_PATH = process.env.BASE_PATH || 'http://localhost:8000/api/v1';
-const DEFAULT_LIMIT_QUERY = Number(process.env.DEFAULT_LIMIT_QUERY || 5);
+const DEFAULT_LIMIT_QUERY = Number(process.env.DEFAULT_LIMIT_QUERY || 2);
 const DEFAULT_LIMIT_MAX_QUERY = Number(
   process.env.DEFAULT_LIMIT_MAX_QUERY || 50
 );

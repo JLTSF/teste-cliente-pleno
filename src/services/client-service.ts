@@ -3,7 +3,6 @@ import { Logger } from 'winston';
 import { ClientRegisterRequestDto } from '../models/dtos';
 import { ClientRepository } from '../repositories/client-repository';
 import {
-  CepNotFoundException,
   ClientAlreadyExistsException,
   ClientNotFoundException,
   IdIsNullException,
