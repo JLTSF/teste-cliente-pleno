@@ -12,7 +12,7 @@ export class ClientsHandler {
     try {
       const client = req.body;
       const response = await this.clientService.addClient(client);
-      return res.send({ client: response });
+      return res.status(200).send({ client: response });
     } catch (error: any) {
       this.logger.error(error.message);
       if (error instanceof BaseException) {

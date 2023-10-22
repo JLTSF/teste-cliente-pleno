@@ -1,41 +1,50 @@
-// import { Logger } from 'winston';
-// import { ClientsHandler } from '../../../src/handlers/http/clients-handler';
-// import { mock } from 'jest-mock-extended';
-// import { ClientService } from '../../../src/services';
-// import { Response } from 'express';
+import { Logger } from 'winston';
+import { ClientsHandler } from '../../../src/handlers/http/clients-handler';
+import { mock, mockDeep } from 'jest-mock-extended';
+import { ClientService } from '../../../src/services';
+import { Response, Request } from 'express';
+import { mockBody } from '../utils/request-model-mock';
 
-// const makeSut = () => {
-//   const loggerMock = mock<Logger>();
-//   const serviceMock = mock<ClientService>();
+const mockResponse = () => {
+  const statusResponse = mockDeep<Response>();
+  const status = jest.fn().mockReturnValue(statusResponse);
 
-//   const ResponseMock = mock<Response>();
-//   const RequestMock = mock<Request>();
-//   const fakeReq = makeFakeRequest() as typeof RequestMock;
+  const response = mockDeep<Response>({
+    status
+  });
 
-//   const fakeRes = (): typeof ResponseMock => {
-//     const res = {} as Response;
-//     res.status = jest.fn().mockReturnValue(res);
-//     res.json = jest.fn().mockReturnValue(res);
+  return {
+    response,
+    statusResponse
+  };
+};
 
-//     return res as typeof ResponseMock;
-//   };
+const makeSut = () => {
+  const loggerMock = mock<Logger>();
+  const serviceMock = mock<ClientService>();
 
-//   const sut = new ClientsHandler(loggerMock, serviceMock);
-//   return {
-//     sut,
-//     loggerMock,
-//     serviceMock,
-//     fakeRes,
-//     fakeReq
-//   };
-// };
+  const { response: fakeRes } = mockResponse();
+  const fakeReq = mock<Request>({
+    body: mockBody
+  });
 
-// describe('ClientsHandler', () => {
-//   test('Should return a user if create is success', async () => {
-//     const { sut, requestMock, fakeRes } = makeSut();
+  const sut = new ClientsHandler(loggerMock, serviceMock);
+  return {
+    sut,
+    loggerMock,
+    serviceMock,
+    fakeRes,
+    fakeReq
+  };
+};
 
-//     await sut.handle(fakeReq, fakeRes);
+describe('ClientsHandler', () => {
+  test('Should return a user if create is success', async () => {
+    const { sut, serviceMock, fakeReq, fakeRes } = makeSut();
 
-//     expect(1 + 1).toBe(2);
-//   });
-// });
+    await sut.handle(fakeReq, fakeRes);
+
+    expect(fakeRes.status).toBeCalledWith(200);
+    expect(serviceMock.addClient).toHaveBeenCalled();
+  });
+});
