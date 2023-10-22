@@ -13,12 +13,17 @@ export class ClientRepository {
         email,
         phone,
         address: {
-          create: {
-            cep: address.cep,
-            city: address.localidade ?? (address.city as string),
-            neighborhood: address.neighborhood ?? (address.bairro as string),
-            state: address.state ?? (address.uf as string),
-            street: address.street ?? (address.logradouro as string)
+          connectOrCreate: {
+            where: {
+              id: address.id
+            },
+            create: {
+              cep: address.cep,
+              city: address.localidade ?? (address.city as string),
+              neighborhood: address.neighborhood ?? (address.bairro as string),
+              state: address.state ?? (address.uf as string),
+              street: address.street ?? (address.logradouro as string)
+            }
           }
         }
       },
