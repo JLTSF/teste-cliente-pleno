@@ -43,7 +43,7 @@ export class ClientService {
         dto,
         JSON.parse(addressExists)
       );
-      return cleanObj({ ...client, isFromCache: true }, ['addressId']);
+      return cleanObj(client, ['addressId']);
     }
 
     const address = await this.cepService.getAddress(dto.cep);

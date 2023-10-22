@@ -1,12 +1,16 @@
 import { ClientRegisterRequestDto } from '../models/dtos';
 import { PrismaClient } from '@prisma/client';
 import { AddressResponseDto } from '../models/dtos/address-respone-dto';
+import { ObjectId } from 'bson';
 
 export class ClientRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async create(dto: ClientRegisterRequestDto, address: AddressResponseDto) {
     const { name, email, phone } = dto;
+    if (!address.id) {
+      address.id = String(new ObjectId(123412));
+    }
     const client = await this.prisma.client.create({
       data: {
         name,
